@@ -11,10 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.hp.MessangerApp.Message;
 import com.example.hp.MessangerApp.Model.Chat;
 import com.example.hp.MessangerApp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -26,8 +28,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     private Context mContext;
     private List<Chat> mChat;
     private String imageurl;
+    private List<Message> userMessagesList;
 
     FirebaseUser fuser;
+    public MessageAdapter (List<Message> userMessagesList)
+    {
+        this.userMessagesList = userMessagesList;
+    }
 
     public MessageAdapter(Context mContext, List<Chat> mChat, String imageurl){
         this.mChat = mChat;
@@ -50,9 +57,19 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull MessageAdapter.ViewHolder holder, int position) {
 
+        Message messages = userMessagesList.get(position);
+
+        String fromUserID = messages.getFrom();
+        String fromMessageType = messages.getType();
+
         Chat chat = mChat.get(position);
 
         holder.show_message.setText(chat.getMessage());
+        if(fromMessageType.equals("image")){
+            Picasso.get().load(messages.getMessage()).into(holder.image_sent);
+
+        }
+
 
         if (imageurl.equals("default")){
             holder.profile_image.setImageResource(R.mipmap.ic_launcher);
@@ -70,6 +87,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.txt_seen.setVisibility(View.GONE);
         }
 
+
     }
 
     @Override
@@ -80,7 +98,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public  class ViewHolder extends RecyclerView.ViewHolder{
 
         public TextView show_message;
-        public ImageView profile_image;
+        public ImageView profile_image, image_sent;
         public TextView txt_seen;
 
         public ViewHolder(View itemView) {
@@ -88,6 +106,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
             show_message = itemView.findViewById(R.id.show_message);
             profile_image = itemView.findViewById(R.id.profile_image);
+            image_sent = itemView.findViewById(R.id.image_message);
             txt_seen = itemView.findViewById(R.id.txt_seen);
         }
     }
